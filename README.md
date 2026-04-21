@@ -111,9 +111,12 @@ Baseline comparison across 5 seeds per task:
 |-------|------|--------|------|---------|
 | No-Op (submit only) | 0.010 | 0.010 | 0.010 | 0.010 |
 | Random Agent | 0.010 | 0.049 | 0.087 | 0.048 |
-| Smart Heuristic | 0.203 | 0.110 | 0.202 | 0.172 |
-| **Llama 3.3 70B (ReAct)** | **TBD** | **TBD** | **TBD** | **TBD** |
-| **GRPO-Trained** | **TBD** | **TBD** | **TBD** | **TBD** |
+| Smart Heuristic (8 tools) | 0.203 | 0.110 | 0.202 | 0.172 |
+| **GRPO-Trained (Colab T4)** | **0.714** | **—** | **—** | **0.714** |
+
+**Training curve** (20 episodes, T4 GPU): Score rises from **0.286 → 0.714** with running average **0.24 → 0.71**.
+
+![Reward Curve](outputs/reward_curve.png)
 
 *The 2-hop comorbidity override error type has 0% detection rate even with the smart heuristic.*
 
