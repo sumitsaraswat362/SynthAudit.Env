@@ -255,7 +255,10 @@ class ActorProposalGenerator:
             except (ValueError, TypeError):
                 delay = 0
 
-        from server.patient_generator import BASE_STAGE_MORTALITY
+        try:
+            from patient_generator import BASE_STAGE_MORTALITY
+        except ImportError:
+            from server.patient_generator import BASE_STAGE_MORTALITY
         stage = patient.get("stage", "II")
         stage_mort = int(BASE_STAGE_MORTALITY.get(stage, 0.10) * 100)
 
