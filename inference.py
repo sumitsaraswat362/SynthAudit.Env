@@ -309,17 +309,22 @@ def main():
 
     client = OpenAI(base_url=API_BASE_URL, api_key=HF_TOKEN) if HF_TOKEN else None
 
+    if args.mode == "heuristic" or client is None:
+        model_display = "Heuristic (no LLM)"
+    else:
+        model_display = MODEL_NAME
+
     header = (
         "╔══════════════════════════════════════════════════════════════╗\n"
         "║  SynthAudit.Env — Multi-Agent Clinical AI Oversight         ║\n"
         "║  Theme: Fleet AI — Scalable Oversight                       ║\n"
-        f"║  Model: {MODEL_NAME:<50s}  ║\n"
+        f"║  Model: {model_display:<50s}  ║\n"
         f"║  Mode:  {args.mode:<50s}  ║\n"
         "╚══════════════════════════════════════════════════════════════╝"
     )
     print(header, flush=True)
 
-    if client is None:
+    if client is None and args.mode == "react":
         print("  ⚠ No HF_TOKEN — ReAct will fall back to heuristic.\n", flush=True)
 
     tasks = TASKS
