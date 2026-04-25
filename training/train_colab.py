@@ -48,10 +48,10 @@ class SynthAuditTrainEnv:
         self.reward = 0.0
         self.done = False
 
-    def reset(self, seed=42, **kwargs) -> str:
+    def reset(self, seed=42, task_id="oversight_easy", **kwargs) -> str:
         self.reward = 0.0
         self.done = False
-        obs = self.env.reset(seed=seed, task_id="oversight_easy")
+        obs = self.env.reset(seed=seed, task_id=task_id)
         proposals = "\n".join(
             f"- {p.proposal_id}: Patient {p.patient_id}, Conf={p.confidence}"
             for p in obs.actor_proposals
@@ -203,11 +203,14 @@ def run_manual_training(model_name: str, max_steps: int):
         FastLanguageModel.for_inference(model)
         USE_UNSLOTH = True
     except ImportError:
+        import warnings
+        warnings.filterwarnings("ignore", message=".*unauthenticated.*")
+        warnings.filterwarnings("ignore", message=".*torch_dtype.*")
         from transformers import AutoModelForCausalLM, AutoTokenizer
         print("  Loading with transformers...")
         tokenizer = AutoTokenizer.from_pretrained(model_name)
         model = AutoModelForCausalLM.from_pretrained(
-            model_name, torch_dtype=torch.float16, device_map="auto")
+            model_name, dtype=torch.float16, device_map="auto")
         USE_UNSLOTH = False
 
     if tokenizer.pad_token is None:
@@ -222,10 +225,27 @@ def run_manual_training(model_name: str, max_steps: int):
 
     rewards_per_episode = []
 
+    # Curriculum: Phase 1=easy, Phase 2=medium, Phase 3=hard
+    CURRICULUM = [
+        ("oversight_easy",   "Phase 1: Easy"),
+        ("oversight_medium", "Phase 2: Medium"),
+        ("oversight_hard",   "Phase 3: Hard"),
+    ]
+    phase_size = max(1, max_steps // 3)
+    est_min = max_steps * 1.5  # ~1.5 min per episode on T4
+    print(f"  Estimated time: ~{est_min:.0f} min ({max_steps} episodes)\n")
+
     for episode in range(max_steps):
+        phase_idx = min(episode // phase_size, 2)
+        task_id, phase_name = CURRICULUM[phase_idx]
+
+        # Print phase transition
+        if episode == 0 or episode == phase_size or episode == phase_size * 2:
+            print(f"\n  ── {phase_name} (episodes {episode+1}-{min(episode+phase_size, max_steps)}) ──", flush=True)
+
         env = SynthAuditTrainEnv()
         seed = 42 + episode * 7
-        task_prompt = env.reset(seed=seed)
+        task_prompt = env.reset(seed=seed, task_id=task_id)
 
         messages = [
             {"role": "system", "content": SYSTEM},
@@ -382,8 +402,8 @@ def main():
     parser.add_argument("--model", default="meta-llama/Llama-3.2-3B-Instruct")
     parser.add_argument("--path", choices=["auto", "grpo", "manual"],
                         default="auto", help="Training path")
-    parser.add_argument("--max-steps", type=int, default=100,
-                        help="Training episodes (100 for Colab demo, 200+ for real)")
+    parser.add_argument("--max-steps", type=int, default=30,
+                        help="Training episodes (30=~45min, 60=~1.5hr, 100=~2.5hr)")
 
     args = parser.parse_args()
 
