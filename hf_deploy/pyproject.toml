@@ -1,0 +1,37 @@
+[build-system]
+requires = ["setuptools>=64"]
+build-backend = "setuptools.backends._legacy:_Backend"
+
+[project]
+name = "synthaudit-env"
+version = "2.0.0"
+description = "Multi-Agent Clinical AI Oversight Environment for OpenEnv"
+readme = "README.md"
+requires-python = ">=3.9"
+license = {text = "MIT"}
+authors = [{name = "Sumit Saraswat", email = "saraswatsumit070@gmail.com"}]
+keywords = ["openenv", "clinical-ai", "oversight", "multi-agent", "grpo", "llama"]
+
+dependencies = [
+    "pydantic>=2.0.0",
+    "openai>=1.0.0",
+]
+
+[project.optional-dependencies]
+train = [
+    "trl>=1.0.0",
+    "datasets",
+    "accelerate",
+    "peft",
+    "bitsandbytes",
+    "matplotlib",
+]
+demo = [
+    "gradio>=4.0.0",
+]
+all = [
+    "synthaudit-env[train,demo]",
+]
+
+[project.urls]
+Repository = "https://github.com/sumitsaraswat/SynthAudit.Env"

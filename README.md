@@ -253,16 +253,55 @@ SynthAudit.Env/
 
 ---
 
-## Why This Wins
+## What We Contribute
 
-| Criteria (Weight) | Our Approach |
+> **The contribution is the environment and reward architecture, not the final model.**
+
+SynthAudit.Env proves three things:
+
+1. **Adversarial clinical environments are tractable** — procedural generation creates infinite unique episodes, preventing memorization while maintaining medical realism.
+
+2. **Small models can learn agentic tool-calling via GRPO** — a 3B model with 4-bit LoRA went from zero tool-calling ability to performing full `review → investigate → flag` chains in 65 minutes on a T4. This is a proof-of-concept, not a converged model — longer training (200-500 steps) would show stronger convergence.
+
+3. **Bigger is not always better in clinical AI** — our frontier model benchmarks prove that Llama 3.3 70B (0.66) outperforms 3.1 405B (0.50) in agentic auditing, because tool-calling efficiency matters more than raw parameter count in structured environments.
+
+| Criteria | Our Approach |
 |---|---|
-| **Innovation (40%)** | Multi-agent oversight + 8 tools + Theory-of-Mind + adaptive curriculum + SHAP explainability + statistical bias analysis. No other entry combines these. |
-| **Storytelling (30%)** | Life-or-death stakes. Real medical AI failure modes. "Who audits the AI?" |
-| **Reward Curves (20%)** | Dense shaped rewards ensure visible improvement in 20 training steps. F-β (β=1.5) prioritizes recall because missing errors kills patients. |
-| **Pipeline (10%)** | Native TRL `environment_factory`, Llama 3.2 via Unsloth, Colab-ready. |
+| **Innovation** | Multi-agent oversight + 8 tools + Theory-of-Mind + adaptive curriculum. No other OpenEnv entry combines adversarial actor reasoning with dense shaped rewards. |
+| **Storytelling** | Life-or-death stakes. Real medical AI failure modes. "Who audits the AI?" |
+| **Reward Design** | Dense F-β shaped rewards (β=1.5) enable visible learning in 50 steps. Recall-weighted because missing errors kills patients. |
+| **Pipeline** | End-to-end: TRL GRPOTrainer → Unsloth 4-bit → Colab T4. Fully reproducible. |
+
+---
+
+## Limitations & Future Work
+
+> We believe honest limitations make research stronger, not weaker.
+
+| Limitation | Impact | Future Work |
+|---|---|---|
+| **50 GRPO steps is a proof-of-concept** | The reward curve is noisy and the model hasn't converged. Mean reward fluctuates (0.05-0.39). | 200-500 steps with learning rate warmup would show clearer convergence. |
+| **3B model vs 8-tool complexity** | The full environment (2-hop reasoning, Simpson's Paradox) is too complex for a 3B model to master reliably. | Fine-tune 7B-13B models, or use staged curriculum with simpler subtasks first. |
+| **Single T4 GPU constraint** | 4-bit quantization + LoRA limits model capacity. Longer sequences OOM. | Multi-GPU training or A100 would allow higher quality LoRA (rank 32+). |
+| **Easy-task performance only** | GRPO-trained model achieves 0.714 on Easy task; Medium and Hard are untested. | Dedicated training runs per difficulty level. |
+| **No held-out test set** | Training and evaluation use the same procedural generator (different seeds). | Create a fixed held-out seed set for standardized benchmarking. |
+
+---
+
+## Relationship to ClinicalBench
+
+SynthAudit.Env builds on [ClinicalBench](https://github.com/sumitsaraswat362/clinical-trial-auditor), our Phase 1 OpenEnv submission. The key evolution:
+
+| | ClinicalBench (Phase 1) | SynthAudit.Env (Grand Finale) |
+|---|---|---|
+| **Architecture** | Single-agent benchmark | Multi-agent oversight (Actor + Oversight) |
+| **Agent** | External LLM audits raw data | Oversight agent audits Actor's proposals |
+| **Training** | Inference-only evaluation | GRPO reinforcement learning |
+| **Model** | Llama 70B / 405B (API) | Qwen 3B (local, fine-tuned) |
+| **Contribution** | Benchmark design | RL training pipeline + environment |
 
 ---
 
 *Built for the Meta PyTorch OpenEnv Hackathon × Scaler School of Technology, Grand Finale 2026*
 *Solo entry by Sumit Saraswat*
+

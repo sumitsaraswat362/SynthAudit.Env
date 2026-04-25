@@ -1,0 +1,33 @@
+name: synth_audit_env
+title: "SynthAudit.Env — Multi-Agent Clinical AI Oversight"
+description: >
+  A multi-agent OpenEnv environment for training oversight agents
+  to monitor, audit, and correct medical AI decisions. The Actor
+  agent proposes clinical diagnoses; the Oversight agent catches
+  errors, hallucinations, and bias blind spots using SHAP analysis.
+version: "1.0.0"
+theme: "Multi-Agent Interactions — Fleet AI: Scalable Oversight"
+author: "Sumit Saraswat"
+
+server:
+  dockerfile: server/Dockerfile
+  port: 8000
+
+models:
+  action: models.SynthAuditAction
+  observation: models.SynthAuditObservation
+  state: models.SynthAuditState
+
+tasks:
+  oversight_easy:
+    description: "Easy oversight — catch obvious age violations"
+    difficulty: easy
+    max_steps: 25
+  oversight_medium:
+    description: "Medium oversight — catch age, temporal, and window errors"
+    difficulty: medium
+    max_steps: 40
+  oversight_hard:
+    description: "Hard oversight — catch subtle comorbidity overrides and bias"
+    difficulty: hard
+    max_steps: 55
