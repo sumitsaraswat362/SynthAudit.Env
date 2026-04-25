@@ -167,6 +167,12 @@ The model successfully learned the **complete multi-turn ReAct loop** for clinic
 
 **This proves that environment-based GRPO can teach small models (3B) complex agentic tool-calling behaviors on consumer GPUs.**
 
+### GRPO Reward Curve
+
+![GRPO Training Reward Curve — 50 Steps on T4](outputs/grpo_reward_curve.png)
+
+*Top: Mean reward per step showing learning signal. Bottom: Peak completion reward showing the model learning full ReAct chains (Easy → Medium → Hard curriculum).*
+
 ---
 
 ## Quick Start
