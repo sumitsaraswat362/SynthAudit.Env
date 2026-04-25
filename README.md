@@ -119,7 +119,9 @@ The oversight agent doesn't just detect errors — it must explain **why the Act
 | Smart Heuristic (8 tools) | 0.203 | 0.110 | 0.202 | 0.172 |
 | **GRPO-Trained (Colab T4)** | **0.714** | **—** | **—** | **0.714** |
 
-![Reward Curve](outputs/reward_curve.png)
+### GRPO 200-Step Reward Curve
+
+![GRPO 200-Step Reward Curve](outputs/grpo_reward_curve_200.png)
 
 *The 2-hop comorbidity override error type has 0% detection rate even with the smart heuristic.*
 
@@ -141,7 +143,7 @@ We trained Qwen2.5-3B-Instruct (4-bit QLoRA via Unsloth) using **Group Relative 
 
 | Metric | Value |
 |--------|-------|
-| **Peak Reward** | 0.54 |
+| **Peak Reward** | 0.506 (Step 157) |
 | **Final Step Reward** | 0.346 |
 | **JSON Format Compliance** | ~95% |
 | **ReAct Chain Consistency** | review → investigate → flag → approve |
@@ -153,7 +155,7 @@ We trained Qwen2.5-3B-Instruct (4-bit QLoRA via Unsloth) using **Group Relative 
 
 | Metric | 50 Steps | 200 Steps | Improvement |
 |--------|----------|-----------|-------------|
-| Peak Reward | 0.45 | **0.54** | +20% |
+| Peak Reward | 0.45 | **0.506** | +12% |
 | Multi-Proposal Handling | 5-6 max | **9-11 max** | +83% |
 | Correct Patient ID Usage | ~60% | **~90%** | +50% |
 | Full ReAct Chain Emission | Partial | **Consistent** | ✅ |
