@@ -5,6 +5,12 @@
 > **Theme**: #1 Multi-Agent Interactions — **Fleet AI: Scalable Oversight**
 > **Author**: Sumit Saraswat | Meta PyTorch OpenEnv Hackathon × Scaler SST
 
+[![GitHub](https://img.shields.io/badge/GitHub-SynthAudit.Env-181717?style=flat-square&logo=github)](https://github.com/sumitsaraswat362/SynthAudit.Env)
+[![HF Model](https://img.shields.io/badge/%F0%9F%A4%97-Trained%20Model-orange?style=flat-square)](https://huggingface.co/Timusgeorge/SynthAudit-Qwen2.5-3B-GRPO)
+[![GRPO](https://img.shields.io/badge/GRPO-Peak%200.45-brightgreen?style=flat-square)](outputs/grpo_reward_curve.png)
+[![T4 GPU](https://img.shields.io/badge/T4%20GPU-65%20min-blue?style=flat-square)](#-grpo-reinforcement-learning--real-training-results)
+[![License](https://img.shields.io/badge/License-Apache%202.0-green?style=flat-square)](LICENSE)
+
 ---
 
 ## The Problem: AI Misdiagnosis Kills
