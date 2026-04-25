@@ -271,7 +271,7 @@ SynthAudit.Env/
 |---|---|
 | **Innovation (40%)** | Multi-agent oversight + 8 tools + Theory-of-Mind + adaptive curriculum + SHAP explainability + statistical bias analysis. No other entry combines these. |
 | **Storytelling (30%)** | Life-or-death stakes. Real medical AI failure modes. "Who audits the AI?" |
-| **Reward Curves (20%)** | Dense shaped rewards ensure visible improvement across 200 GRPO steps. Peak reward 0.54 from $0 compute. F-β (β=1.5) prioritizes recall because missing errors kills patients. |
+| **Reward Curves (20%)** | Dense shaped rewards ensure visible improvement across 200 GRPO steps. +283% over base model from $0 compute. F-β (β=1.5) prioritizes recall because missing errors kills patients. |
 | **Pipeline (10%)** | Native TRL GRPOTrainer, Qwen2.5-3B via Unsloth, Colab-ready, reproducible. |
 
 ---
@@ -294,7 +294,7 @@ These limitations represent opportunities for future work, not fundamental archi
 
 | Resource | URL |
 |----------|-----|
-| **GitHub** | [SynthAudit.Env](https://github.com/Timusgeorge/SynthAudit.Env) |
+| **GitHub** | [SynthAudit.Env](https://github.com/sumitsaraswat362/SynthAudit.Env) |
 | **HF Model** | [Timusgeorge/SynthAudit-Qwen2.5-3B-GRPO](https://huggingface.co/Timusgeorge/SynthAudit-Qwen2.5-3B-GRPO) |
 | **Colab Notebook** | [Training Notebook](https://colab.research.google.com/) |
 
