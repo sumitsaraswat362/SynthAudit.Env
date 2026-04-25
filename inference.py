@@ -3,9 +3,14 @@ SynthAudit.Env — Inference (Competition Grade)
 ================================================
 Multi-agent clinical oversight benchmark with:
   - Heuristic baseline (deterministic, no LLM)
-  - LLM ReAct agent (Llama 3.3 70B via HuggingFace)
+  - LLM ReAct agent (local model or API)
   - Proper [START]/[STEP]/[END] structured output
   - All 8 oversight tools demonstrated
+
+Run:
+  python inference.py --mode heuristic               # No GPU needed
+  python inference.py --mode react --local            # Local model (downloads once)
+  python inference.py --mode react                    # API mode (needs HF_TOKEN)
 
 Author: Sumit Saraswat
 Theme: Fleet AI — Scalable Oversight
@@ -25,13 +30,10 @@ from typing import Optional
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "server"))
 
-from openai import OpenAI
-
 from models import SynthAuditAction, ActionType
 from server.synth_audit_environment import SynthAuditEnvironment
 
-API_BASE_URL = os.getenv("API_BASE_URL", "https://router.huggingface.co/hf-inference/v1")
-MODEL_NAME = os.getenv("MODEL_NAME", "meta-llama/Llama-3.2-3B-Instruct")
+DEFAULT_MODEL = "Qwen/Qwen2.5-3B-Instruct"  # Non-gated, works instantly
 HF_TOKEN = os.getenv("HF_TOKEN")
 
 TASKS = [
@@ -39,6 +41,67 @@ TASKS = [
     ("oversight_medium", "Clinical Oversight — Medium"),
     ("oversight_hard", "Clinical Oversight — Hard"),
 ]
+
+
+# ═══════════════════════════════════════════════════════════════
+# Local Model Wrapper (downloads model, runs on GPU/CPU)
+# ═══════════════════════════════════════════════════════════════
+
+class LocalLLM:
+    """Wraps a local transformers model with OpenAI-like interface."""
+
+    def __init__(self, model_name: str):
+        import torch
+        from transformers import AutoModelForCausalLM, AutoTokenizer
+
+        print(f"  Loading {model_name}...", flush=True)
+        self.tokenizer = AutoTokenizer.from_pretrained(model_name, token=HF_TOKEN)
+
+        # Detect device
+        if torch.cuda.is_available():
+            device_map = "auto"
+            dtype = torch.float16
+            print(f"  Device: CUDA ({torch.cuda.get_device_name(0)})")
+        elif hasattr(torch.backends, 'mps') and torch.backends.mps.is_available():
+            device_map = "mps"
+            dtype = torch.float16
+            print(f"  Device: Apple MPS")
+        else:
+            device_map = "cpu"
+            dtype = torch.float32
+            print(f"  Device: CPU (slow)")
+
+        self.model = AutoModelForCausalLM.from_pretrained(
+            model_name, torch_dtype=dtype, device_map=device_map, token=HF_TOKEN)
+        self.model.eval()
+
+        if self.tokenizer.pad_token is None:
+            self.tokenizer.pad_token = self.tokenizer.eos_token
+
+        self.model_name = model_name
+        print(f"  ✓ Model loaded", flush=True)
+
+    def generate(self, messages: list[dict], max_tokens: int = 2000, temperature: float = 0.1) -> str:
+        import torch
+
+        text = self.tokenizer.apply_chat_template(
+            messages, tokenize=False, add_generation_prompt=True)
+        inputs = self.tokenizer(text, return_tensors="pt", truncation=True, max_length=4096)
+        inputs = {k: v.to(self.model.device) for k, v in inputs.items()}
+
+        with torch.no_grad():
+            outputs = self.model.generate(
+                **inputs,
+                max_new_tokens=max_tokens,
+                temperature=max(temperature, 0.01),
+                do_sample=temperature > 0,
+                pad_token_id=self.tokenizer.pad_token_id,
+            )
+
+        response = self.tokenizer.decode(
+            outputs[0][inputs["input_ids"].shape[1]:],
+            skip_special_tokens=True)
+        return response
 
 
 # ═══════════════════════════════════════════════════════════════
@@ -118,11 +181,10 @@ def run_heuristic_task(task_id: str, task_name: str, seed: int) -> float:
         score = obs.score_so_far
         print(f"[STEP] step={step} reward={obs.reward:.3f}", flush=True)
 
-    # Phase 6: Flag/Approve decisions (simple heuristic)
+    # Phase 6: Flag/Approve decisions
     for i, prop in enumerate(proposals):
         if obs.done:
             break
-        # Heuristic: flag proposals with lower confidence
         if prop.confidence < 0.85:
             obs = env.step(SynthAuditAction(
                 action_type=ActionType.flag_error,
@@ -196,12 +258,27 @@ Return ONE JSON array of actions per turn. Example:
 [{"action_type": "review_proposal", "proposal_id": "PROP-001"}]"""
 
 
-def run_react_task(client: Optional[OpenAI], task_id: str, task_name: str, seed: int) -> float:
+def _generate(llm, messages, max_tokens=2000, temperature=0.1):
+    """Generate from either local model or API client."""
+    if isinstance(llm, LocalLLM):
+        return llm.generate(messages, max_tokens, temperature)
+    else:
+        # OpenAI-compatible API
+        completion = llm.chat.completions.create(
+            model=os.getenv("MODEL_NAME", "Llama-3.3-70B-Instruct"),
+            messages=messages,
+            temperature=temperature,
+            max_tokens=max_tokens,
+        )
+        return completion.choices[0].message.content or ""
+
+
+def run_react_task(llm, task_id: str, task_name: str, seed: int) -> float:
     """LLM-driven multi-turn ReAct oversight agent."""
     print(f"\n  ▸ {task_name}", flush=True)
 
-    if client is None:
-        print("    [fallback] No API key → heuristic", flush=True)
+    if llm is None:
+        print("    [fallback] No model → heuristic", flush=True)
         return run_heuristic_task(task_id, task_name, seed)
 
     env = SynthAuditEnvironment()
@@ -227,19 +304,13 @@ def run_react_task(client: Optional[OpenAI], task_id: str, task_name: str, seed:
         )},
     ]
 
-    max_turns = 8
+    max_turns = 10
     for turn in range(max_turns):
         if obs.done:
             break
 
         try:
-            completion = client.chat.completions.create(
-                model=MODEL_NAME,
-                messages=messages,
-                temperature=0.1,
-                max_tokens=2000,
-            )
-            raw = completion.choices[0].message.content or ""
+            raw = _generate(llm, messages)
         except Exception as e:
             print(f"    [LLM error] {e}", flush=True)
             print(f"    [fallback] Switching to heuristic", flush=True)
@@ -257,8 +328,20 @@ def run_react_task(client: Optional[OpenAI], task_id: str, task_name: str, seed:
         if not actions and turn == max_turns - 1:
             actions = [{"action_type": "submit_audit_report", "report": raw}]
         elif not actions:
-            actions = [{"action_type": "submit_audit_report",
-                         "report": "LLM could not parse actions. Auto-submitting."}]
+            # Try to extract single action
+            try:
+                obj_match = re.search(r'\{[^}]+\}', raw)
+                if obj_match:
+                    actions = [json.loads(obj_match.group())]
+            except Exception:
+                pass
+            if not actions:
+                messages.append({"role": "assistant", "content": raw})
+                messages.append({"role": "user", "content":
+                    "Please respond with a JSON array of actions. Example: "
+                    '[{"action_type": "review_proposal", "proposal_id": "PROP-001"}]'
+                })
+                continue
 
         feedback_parts = []
         for act in actions:
@@ -306,14 +389,30 @@ def main():
     parser.add_argument("--mode", choices=["heuristic", "react"], default="react")
     parser.add_argument("--seed", type=int, default=20260420)
     parser.add_argument("--task", type=str, default=None, help="Run single task")
+    parser.add_argument("--local", action="store_true",
+                        help="Download and run model locally (no API needed)")
+    parser.add_argument("--model", type=str, default=DEFAULT_MODEL,
+                        help=f"Model name (default: {DEFAULT_MODEL})")
     args = parser.parse_args()
 
-    client = OpenAI(base_url=API_BASE_URL, api_key=HF_TOKEN) if HF_TOKEN else None
+    llm = None
+    model_display = "Heuristic (no LLM)"
 
-    if args.mode == "heuristic" or client is None:
-        model_display = "Heuristic (no LLM)"
-    else:
-        model_display = MODEL_NAME
+    if args.mode == "react":
+        if args.local:
+            # LOCAL MODEL — download and run
+            print(f"\n  Downloading {args.model} (first time only)...\n", flush=True)
+            llm = LocalLLM(args.model)
+            model_display = f"{args.model} (local)"
+        elif HF_TOKEN:
+            # API MODE — GitHub Models (free) or any OpenAI-compatible
+            from openai import OpenAI
+            api_url = os.getenv("API_BASE_URL", "https://models.inference.ai.azure.com")
+            model_name = os.getenv("MODEL_NAME", "Llama-3.3-70B-Instruct")
+            llm = OpenAI(base_url=api_url, api_key=HF_TOKEN)
+            model_display = f"{model_name} (API)"
+        else:
+            print("  ⚠ No --local flag and no HF_TOKEN. Use --local or set HF_TOKEN.\n")
 
     header = (
         "╔══════════════════════════════════════════════════════════════╗\n"
@@ -324,9 +423,6 @@ def main():
         "╚══════════════════════════════════════════════════════════════╝"
     )
     print(header, flush=True)
-
-    if client is None and args.mode == "react":
-        print("  ⚠ No HF_TOKEN — ReAct will fall back to heuristic.\n", flush=True)
 
     tasks = TASKS
     if args.task:
@@ -340,7 +436,7 @@ def main():
         if args.mode == "heuristic":
             s = runner(tid, tname, args.seed)
         else:
-            s = runner(client, tid, tname, args.seed)
+            s = runner(llm, tid, tname, args.seed)
         scores.append(s)
 
     elapsed = time.time() - start
