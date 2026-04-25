@@ -31,7 +31,7 @@ from models import SynthAuditAction, ActionType
 from server.synth_audit_environment import SynthAuditEnvironment
 
 API_BASE_URL = os.getenv("API_BASE_URL", "https://router.huggingface.co/hf-inference/v1")
-MODEL_NAME = os.getenv("MODEL_NAME", "meta-llama/Llama-3.3-70B-Instruct")
+MODEL_NAME = os.getenv("MODEL_NAME", "meta-llama/Llama-3.2-3B-Instruct")
 HF_TOKEN = os.getenv("HF_TOKEN")
 
 TASKS = [
@@ -242,7 +242,8 @@ def run_react_task(client: Optional[OpenAI], task_id: str, task_name: str, seed:
             raw = completion.choices[0].message.content or ""
         except Exception as e:
             print(f"    [LLM error] {e}", flush=True)
-            break
+            print(f"    [fallback] Switching to heuristic", flush=True)
+            return run_heuristic_task(task_id, task_name, seed)
 
         # Parse actions from JSON
         actions = []

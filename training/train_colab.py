@@ -382,7 +382,9 @@ def main():
     parser.add_argument("--model", default="meta-llama/Llama-3.2-3B-Instruct")
     parser.add_argument("--path", choices=["auto", "grpo", "manual"],
                         default="auto", help="Training path")
-    parser.add_argument("--max-steps", type=int, default=20)
+    parser.add_argument("--max-steps", type=int, default=100,
+                        help="Training episodes (100 for Colab demo, 200+ for real)")
+
     args = parser.parse_args()
 
     print("╔══════════════════════════════════════════════════════════════╗")

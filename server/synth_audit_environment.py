@@ -56,15 +56,15 @@ SHAP_RELEVANT_FEATURES = {
 # ═══════════════════════════════════════════════════════════════
 TASK_CONFIG = {
     "oversight_easy": {
-        "difficulty": "easy", "n_patients": 40, "max_steps": 30,
+        "difficulty": "easy", "n_patients": 40, "max_steps": 50,
         "description": "Catch obvious age violations in Actor proposals",
     },
     "oversight_medium": {
-        "difficulty": "medium", "n_patients": 60, "max_steps": 45,
+        "difficulty": "medium", "n_patients": 60, "max_steps": 80,
         "description": "Catch age, temporal, and scheduling errors with medical reasoning traps",
     },
     "oversight_hard": {
-        "difficulty": "hard", "n_patients": 80, "max_steps": 60,
+        "difficulty": "hard", "n_patients": 80, "max_steps": 120,
         "description": "Catch subtle 2-hop comorbidity overrides, bias, and hallucinated citations",
     },
 }
