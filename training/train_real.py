@@ -105,7 +105,7 @@ def main():
         from unsloth import FastLanguageModel
         print(f"\n  Loading {MODEL} with Unsloth (4-bit LoRA)...")
         model, tokenizer = FastLanguageModel.from_pretrained(
-            MODEL, max_seq_length=2048, load_in_4bit=True)
+            MODEL, max_seq_length=1024, load_in_4bit=True)
         model = FastLanguageModel.get_peft_model(
             model, r=16,
             target_modules=["q_proj", "k_proj", "v_proj", "o_proj",
@@ -183,9 +183,9 @@ def main():
     from trl import GRPOTrainer, GRPOConfig
 
     config = GRPOConfig(
-        max_completion_length=1024,
+        max_completion_length=512,
         num_generations=NUM_GEN,
-        gradient_accumulation_steps=4,
+        gradient_accumulation_steps=1,
         per_device_train_batch_size=1,
         max_steps=MAX_STEPS,
         logging_steps=1,

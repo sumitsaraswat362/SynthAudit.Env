@@ -1,8 +1,8 @@
 __pycache__/
 *.pyc
 .venv/
-outputs/
 *.egg-info/
 .DS_Store
-*.png
-*.jpg
+.cursor/
+outputs/trained_model/
+outputs/checkpoint-*/

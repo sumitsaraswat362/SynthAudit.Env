@@ -1,0 +1,102 @@
+{
+  "timestamp": "2026-04-21 17:31:25",
+  "n_seeds": 5,
+  "results": {
+    "No-Op (submit only)": {
+      "oversight_easy": {
+        "mean": 0.01,
+        "scores": [
+          0.01,
+          0.01,
+          0.01,
+          0.01,
+          0.01
+        ]
+      },
+      "oversight_medium": {
+        "mean": 0.01,
+        "scores": [
+          0.01,
+          0.01,
+          0.01,
+          0.01,
+          0.01
+        ]
+      },
+      "oversight_hard": {
+        "mean": 0.01,
+        "scores": [
+          0.01,
+          0.01,
+          0.01,
+          0.01,
+          0.01
+        ]
+      }
+    },
+    "Random Agent": {
+      "oversight_easy": {
+        "mean": 0.01,
+        "scores": [
+          0.01,
+          0.01,
+          0.01,
+          0.01,
+          0.01
+        ]
+      },
+      "oversight_medium": {
+        "mean": 0.04852,
+        "scores": [
+          0.01,
+          0.01,
+          0.01,
+          0.01,
+          0.2026
+        ]
+      },
+      "oversight_hard": {
+        "mean": 0.08682000000000001,
+        "scores": [
+          0.2021,
+          0.01,
+          0.01,
+          0.01,
+          0.202
+        ]
+      }
+    },
+    "Smart Heuristic": {
+      "oversight_easy": {
+        "mean": 0.20276,
+        "scores": [
+          0.1,
+          0.1,
+          0.1,
+          0.3569,
+          0.3569
+        ]
+      },
+      "oversight_medium": {
+        "mean": 0.10999999999999999,
+        "scores": [
+          0.1,
+          0.1,
+          0.15,
+          0.1,
+          0.1
+        ]
+      },
+      "oversight_hard": {
+        "mean": 0.20198,
+        "scores": [
+          0.1,
+          0.2084,
+          0.2815,
+          0.2,
+          0.22
+        ]
+      }
+    }
+  }
+}
