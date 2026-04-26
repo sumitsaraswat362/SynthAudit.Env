@@ -278,9 +278,14 @@ def build_app():
 - **Wrong rule application**: Applies Stage IV exception without checking overrides
 """)
 
-            # Tab 4: Interactive Audit
-            with gr.Tab("🔍 Live Audit Demo"):
-                gr.Markdown("### 🔬 Interactive Audit Simulator\nClick **Generate Scenario** to create a random clinical trial. Then click **Run Oversight Audit** to watch the trained agent detect errors step-by-step.")
+            # Tab 4: Interactive Environment Simulator
+            with gr.Tab("🔬 Environment Simulator"):
+                gr.Markdown("""### 🔬 SynthAudit Environment Simulator
+**This demonstrates the environment**, not the LLM. It shows how SynthAudit.Env generates adversarial clinical scenarios, injects hidden errors, and scores agent actions using our dense reward model.
+
+The **actual trained model's results** (real LLM inference) are in the ⚔️ Base vs Trained tab.
+
+👇 Try generating different scenarios to see the variety of adversarial cases our environment produces:""")
 
                 with gr.Row():
                     seed_input = gr.Slider(1, 999, value=42, step=1, label="Random Seed")
@@ -288,7 +293,7 @@ def build_app():
                     gen_btn = gr.Button("🎲 Generate Scenario", variant="primary")
 
                 scenario_out = gr.Markdown(value="*Click 'Generate Scenario' to begin*")
-                audit_btn = gr.Button("🩺 Run Oversight Audit", variant="secondary", interactive=False)
+                audit_btn = gr.Button("⚡ Simulate Perfect Agent (shows reward scoring)", variant="secondary", interactive=False)
                 audit_out = gr.Markdown(value="")
 
                 def generate_scenario(seed, difficulty):
