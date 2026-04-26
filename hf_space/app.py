@@ -43,36 +43,37 @@ def make_reward_plot():
     w = 10
     avg = [float(np.mean(REWARDS_200[max(0,i-w+1):i+1])) for i in range(200)]
 
-    fig, ax = plt.subplots(figsize=(14, 5), facecolor='#0a0e17')
-    ax.set_facecolor('#0f1520')
-    ax.tick_params(colors='#8b949e', labelsize=9)
-    for s in ax.spines.values(): s.set_color('#1e2a3a')
-    ax.grid(True, alpha=0.1, color='#58a6ff')
+    fig, ax = plt.subplots(figsize=(14, 6), facecolor='#0d1117')
+    ax.set_facecolor('#161b22')
+    ax.tick_params(colors='#c9d1d9', labelsize=11)
+    for s in ax.spines.values(): s.set_color('#30363d')
+    ax.grid(True, alpha=0.15, color='#58a6ff')
 
-    ax.fill_between(STEPS, REWARDS_200, alpha=0.12, color='#58a6ff')
-    ax.plot(STEPS, REWARDS_200, '-', color='#58a6ff', linewidth=0.8, alpha=0.5, label='Step Reward')
-    ax.plot(STEPS, avg, '-', color='#f0883e', linewidth=2.5, label=f'Running Avg (w={w})')
+    ax.fill_between(STEPS, REWARDS_200, alpha=0.18, color='#58a6ff')
+    ax.plot(STEPS, REWARDS_200, '-', color='#58a6ff', linewidth=1.0, alpha=0.6, label='Step Reward')
+    ax.plot(STEPS, avg, '-', color='#f0883e', linewidth=3, label=f'Running Avg (w={w})')
 
     # Phase bands
-    ax.axvspan(1, 120, alpha=0.03, color='#3fb950')
-    ax.axvspan(120, 170, alpha=0.03, color='#f0883e')
-    ax.axvspan(170, 200, alpha=0.03, color='#f85149')
-    ax.text(60, 0.02, 'WARM-UP', color='#3fb950', fontsize=9, ha='center', alpha=0.6, fontweight='bold')
-    ax.text(145, 0.02, 'SCALING', color='#f0883e', fontsize=9, ha='center', alpha=0.6, fontweight='bold')
-    ax.text(185, 0.02, 'HARD', color='#f85149', fontsize=9, ha='center', alpha=0.6, fontweight='bold')
+    ax.axvspan(1, 120, alpha=0.06, color='#3fb950')
+    ax.axvspan(120, 170, alpha=0.06, color='#f0883e')
+    ax.axvspan(170, 200, alpha=0.06, color='#f85149')
+    ax.text(60, 0.02, 'WARM-UP', color='#3fb950', fontsize=12, ha='center', alpha=0.9, fontweight='bold')
+    ax.text(145, 0.02, 'SCALING', color='#f0883e', fontsize=12, ha='center', alpha=0.9, fontweight='bold')
+    ax.text(185, 0.02, 'HARD', color='#f85149', fontsize=12, ha='center', alpha=0.9, fontweight='bold')
 
     # Peak annotation
     peak_i = int(np.argmax(REWARDS_200))
     ax.annotate(f'Peak: {REWARDS_200[peak_i]:.3f}', xy=(STEPS[peak_i], REWARDS_200[peak_i]),
-                xytext=(STEPS[peak_i]-30, REWARDS_200[peak_i]+0.05),
-                arrowprops=dict(arrowstyle='->', color='#f85149', lw=1.5),
-                fontsize=11, fontweight='bold', color='#f85149')
+                xytext=(STEPS[peak_i]-40, REWARDS_200[peak_i]+0.08),
+                arrowprops=dict(arrowstyle='->', color='#ff7b72', lw=2),
+                fontsize=13, fontweight='bold', color='#ff7b72',
+                bbox=dict(boxstyle='round,pad=0.3', facecolor='#21262d', edgecolor='#ff7b72', alpha=0.9))
 
-    ax.set_xlabel('Training Step', color='#8b949e', fontsize=11)
-    ax.set_ylabel('Mean Reward', color='#8b949e', fontsize=11)
+    ax.set_xlabel('Training Step', color='#c9d1d9', fontsize=13)
+    ax.set_ylabel('Mean Reward', color='#c9d1d9', fontsize=13)
     ax.set_title('GRPO 200-Step Reward Curve — Qwen2.5-3B-Instruct | 4-bit QLoRA | Tesla T4',
-                 color='#f0f6fc', fontsize=12, fontweight='bold', pad=10)
-    ax.legend(fontsize=9, facecolor='#161b22', edgecolor='#30363d', labelcolor='#c9d1d9')
+                 color='#f0f6fc', fontsize=14, fontweight='bold', pad=12)
+    ax.legend(fontsize=11, facecolor='#21262d', edgecolor='#30363d', labelcolor='#f0f6fc')
     ax.set_xlim(0.5, 200.5)
     plt.tight_layout()
     return fig
@@ -82,11 +83,11 @@ def make_comparison_plot():
     import matplotlib; matplotlib.use('Agg')
     import matplotlib.pyplot as plt
 
-    fig, ax = plt.subplots(figsize=(10, 5), facecolor='#0a0e17')
-    ax.set_facecolor('#0f1520')
-    ax.tick_params(colors='#8b949e', labelsize=10)
-    for s in ax.spines.values(): s.set_color('#1e2a3a')
-    ax.grid(True, alpha=0.1, color='#58a6ff', axis='y')
+    fig, ax = plt.subplots(figsize=(10, 6), facecolor='#0d1117')
+    ax.set_facecolor('#161b22')
+    ax.tick_params(colors='#c9d1d9', labelsize=11)
+    for s in ax.spines.values(): s.set_color('#30363d')
+    ax.grid(True, alpha=0.15, color='#58a6ff', axis='y')
 
     diffs = ['Easy', 'Medium', 'Hard', 'Overall']
     base = [0.087, 0.018, 0.015, 0.040]
@@ -94,27 +95,28 @@ def make_comparison_plot():
     x = np.arange(4)
     w = 0.35
 
-    b1 = ax.bar(x - w/2, base, w, label='Base Model', color='#f85149', alpha=0.8)
-    b2 = ax.bar(x + w/2, trained, w, label='GRPO-Trained', color='#3fb950', alpha=0.8)
+    b1 = ax.bar(x - w/2, base, w, label='Base Model', color='#f85149', alpha=0.9, edgecolor='#ff7b72', linewidth=0.5)
+    b2 = ax.bar(x + w/2, trained, w, label='GRPO-Trained', color='#3fb950', alpha=0.9, edgecolor='#56d364', linewidth=0.5)
 
     for bar in b1:
-        ax.text(bar.get_x()+bar.get_width()/2, bar.get_height()+0.005, f'{bar.get_height():.3f}',
-                ha='center', fontsize=9, color='#f85149')
+        ax.text(bar.get_x()+bar.get_width()/2, bar.get_height()+0.006, f'{bar.get_height():.3f}',
+                ha='center', fontsize=11, color='#ff7b72', fontweight='bold')
     for bar in b2:
-        ax.text(bar.get_x()+bar.get_width()/2, bar.get_height()+0.005, f'{bar.get_height():.3f}',
-                ha='center', fontsize=9, color='#3fb950')
+        ax.text(bar.get_x()+bar.get_width()/2, bar.get_height()+0.006, f'{bar.get_height():.3f}',
+                ha='center', fontsize=11, color='#56d364', fontweight='bold')
 
     imps = ['+230%', '+617%', '+193%', '+283%']
     for i, imp in enumerate(imps):
-        ax.text(x[i]+w/2, trained[i]+0.02, imp, ha='center', fontsize=8, color='#f0883e', fontweight='bold')
+        ax.text(x[i]+w/2, trained[i]+0.025, imp, ha='center', fontsize=10, color='#f0883e', fontweight='bold',
+                bbox=dict(boxstyle='round,pad=0.2', facecolor='#21262d', edgecolor='#f0883e', alpha=0.8))
 
     ax.set_xticks(x)
-    ax.set_xticklabels(diffs, color='#c9d1d9')
-    ax.set_ylabel('Episode Score', color='#8b949e', fontsize=11)
+    ax.set_xticklabels(diffs, color='#f0f6fc', fontsize=12, fontweight='bold')
+    ax.set_ylabel('Episode Score', color='#c9d1d9', fontsize=13)
     ax.set_title('Base vs GRPO-Trained — Post-Training Evaluation (5 seeds × 3 difficulties)',
-                 color='#f0f6fc', fontsize=12, fontweight='bold', pad=10)
-    ax.legend(fontsize=10, facecolor='#161b22', edgecolor='#30363d', labelcolor='#c9d1d9')
-    ax.set_ylim(0, 0.35)
+                 color='#f0f6fc', fontsize=14, fontweight='bold', pad=12)
+    ax.legend(fontsize=11, facecolor='#21262d', edgecolor='#30363d', labelcolor='#f0f6fc')
+    ax.set_ylim(0, 0.38)
     plt.tight_layout()
     return fig
 
