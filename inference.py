@@ -219,7 +219,9 @@ def run_heuristic_task(task_id: str, task_name: str, seed: int) -> float:
         score = obs.score_so_far
         print(f"[STEP] step={step} reward={obs.reward:.3f}", flush=True)
 
-    print(f"[END] task={task_id} score={score:.2f} steps={step}", flush=True)
+    # CRITICAL: Clamp score strictly between 0 and 1 (exclusive)
+    score = min(0.99, max(0.01, score))
+    print(f"[END] task={task_id} score={score:.4f} steps={step}", flush=True)
     return score
 
 
@@ -374,7 +376,9 @@ def run_react_task(llm, task_id: str, task_name: str, seed: int) -> float:
         score = obs.score_so_far
         print(f"[STEP] step={step} reward={obs.reward:.3f}", flush=True)
 
-    print(f"[END] task={task_id} score={score:.2f} steps={step}", flush=True)
+    # CRITICAL: Clamp score strictly between 0 and 1 (exclusive)
+    score = min(0.99, max(0.01, score))
+    print(f"[END] task={task_id} score={score:.4f} steps={step}", flush=True)
     return score
 
 
