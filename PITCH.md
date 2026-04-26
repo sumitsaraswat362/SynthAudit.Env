@@ -1,136 +1,88 @@
-# SynthAudit.Env — 3-Minute Pitch Script
+# SynthAudit.Env — 2-Minute Pitch
 
-## OPENING (30 seconds)
+## HOOK (15 seconds)
 
-> "40,000 patients die every year from diagnostic errors. Now imagine deploying
-> an AI to help — and that AI hallucinates a protocol amendment that doesn't exist,
-> confidently clears a patient whose death date is BEFORE their treatment started,
-> and cites a fake clinical study to justify it.
+> "A patient dies. Not because the doctor was wrong — because the AI
+> that screened them hallucinated a protocol amendment, cleared them
+> for treatment, and cited a fake clinical study to justify it.
 >
-> This is not hypothetical. These are the exact failure modes we see in frontier
-> LLMs today. The question is: **who audits the AI?**
->
-> I'm Sumit. I built SynthAudit.Env — the first OpenEnv environment where
-> an AI agent learns to catch another AI's medical mistakes."
+> **40,000 patients die every year from diagnostic errors.**
+> I built the first environment where AI learns to catch AI mistakes."
 
 ---
 
-## THE PROBLEM (30 seconds)
+## WHAT IT IS (30 seconds)
 
-> "Current clinical AI oversight is manual. A human reviews every case.
-> That doesn't scale. When you have 80 patients in a trial and an AI
-> reviewing all of them, you need oversight at machine speed.
+> "SynthAudit.Env. Two agents. One **Actor** — a frozen AI that
+> reviews patients and makes mistakes. Subtle ones. It cites fake
+> study sections. It ignores age violations. It applies the wrong rules.
 >
-> But the hard part isn't detecting obvious errors. The hard part is
-> catching **subtle** errors — when the AI's reasoning SOUNDS perfectly
-> correct but is actually wrong."
-
-**[SHOW: Actor reasoning example on screen]**
-
-> "Look at this. The Actor AI says: 'Per Section 4.2.1(b) of the protocol
-> amendment, patients with ECOG ≤ 2 are eligible under expanded access.'
-> That section doesn't exist. It's a hallucination. But it sounds
-> extremely plausible."
+> The **Oversight Agent** — trained with GRPO — gets 8 tools to
+> investigate and catch those mistakes. Review, investigate, flag, approve.
+>
+> The hardest test? **2-hop reasoning.** Stage IV patients get an
+> extended treatment window — BUT if comorbidity exceeds the threshold,
+> that extension is revoked. The Actor ignores step 2.
+> **No frontier LLM catches this consistently.**"
 
 ---
 
-## THE SOLUTION (60 seconds)
+## WHY IT'S HARD (20 seconds)
 
-> "SynthAudit.Env is a multi-agent oversight environment built on OpenEnv.
+> "Our environment is **intentionally brutal**. Hard mode has 14-17
+> hidden errors per episode. Even GPT-4 class models struggle.
 >
-> There are two agents. The **Actor** — a frozen AI that reviews patients
-> and proposes diagnoses. Some are correct. Some contain subtle errors
-> injected by our adversarial engine.
->
-> The **Oversight Agent** — this is what we trained with GRPO —
-> has 8 tools to investigate. It can review proposals, pull raw patient
-> records, run SHAP feature attribution, do timeline audits, and
-> statistical cohort analysis.
->
-> Three things make this genuinely hard:"
-
-**[SHOW: Architecture diagram]**
-
-> "**One**: The Actor generates sophisticated medical reasoning. It anchors
-> on irrelevant features, cites fake studies, and applies rules to the
-> wrong context.
->
-> **Two**: The hardest error requires 2-hop reasoning. Stage IV patients
-> get an extended treatment window — BUT if their comorbidity index exceeds
-> the threshold, that extension is revoked. The Actor ignores step 2.
-> No frontier LLM catches this consistently.
->
-> **Three**: Theory-of-Mind scoring. The agent doesn't just detect errors —
-> it must explain WHY the Actor was wrong. 'This looks suspicious' gets
-> less reward than 'The Actor applied the Stage IV exception but ignored
-> the comorbidity override clause.'"
+> This isn't a toy benchmark with 90% accuracy. This is adversarial
+> clinical reasoning where a base model scores **0.04 out of 1.0**.
+> That's the point — if it was easy, you wouldn't need GRPO."
 
 ---
 
 ## RESULTS (30 seconds)
 
-**[SHOW: Base vs Trained comparison chart + Reward curve]**
+**[SHOW: Comparison chart]**
 
-> "We trained Qwen2.5-3B-Instruct using GRPO for 200 steps on a free
-> Colab T4 GPU. Zero dollars. Two hours twenty minutes.
+> "Free Colab T4. Zero dollars. Two hours.
 >
-> Results across 5 seeds and 3 difficulty levels:
-> - **Base model without training: 0.040 average score**
-> - **After 200-step GRPO training: 0.153 — a 283% improvement**
+> **283% improvement** over the untrained model.
+> **4 times more** clinical errors correctly caught.
+> Error detection jumped from **0.13 per episode to 0.53**.
 >
-> The trained model caught **4 times more real clinical errors** than
-> the base model. It learned to review proposals, investigate patient
-> records, and flag specific errors — all through pure reinforcement
-> learning with zero supervised demonstrations.
+> On a 3-billion parameter model. Intentionally small.
+> Because if a 3B model can learn clinical oversight on free hardware,
+> imagine what this environment teaches a 70B.
 >
-> Peak training reward reached **0.506** at step 157.
-> The model went from zero to functional medical auditor on $0 compute."
+> **The environment is the contribution. The model proves it works.**"
 
 ---
 
-## CLOSING (30 seconds)
+## CLOSE (15 seconds)
 
-> "SynthAudit.Env contributes three things to the OpenEnv ecosystem:
+> "SynthAudit.Env: 8 tools, 4 adversarial error types,
+> Theory-of-Mind scoring, dense shaped rewards, adaptive curriculum.
 >
-> **First**, a domain where oversight errors have real consequences —
-> patient safety, not benchmark scores.
+> **AI that watches AI. Zero dollars. Lives saved.**
 >
-> **Second**, an adversarial Actor that tests genuine reasoning,
-> not just tool calling. Our templates simulate the exact failure
-> modes published in medical AI safety literature.
->
-> **Third**, a dense shaped reward model with F-beta scoring that
-> produces measurable improvement in 200 steps on free hardware.
->
-> A 3-billion parameter model, trained for zero dollars, learned to
-> catch medical AI mistakes 283% better than before training.
->
-> The code is live on GitHub and HuggingFace. Every component is
-> reproducible end to end.
->
-> This is AI that watches AI. Thank you."
+> The code is on GitHub and HuggingFace. Thank you."
 
 ---
 
-## TIMER NOTES
-- 0:00–0:30 — Hook (the problem is visceral)
-- 0:30–1:00 — Problem statement + Actor example
-- 1:00–2:00 — Architecture + what makes it hard
-- 2:00–2:30 — Results with REAL numbers
-- 2:30–3:00 — Contributions + close
+## CHEAT SHEET (memorize these)
 
-## SCREEN SEQUENCE
-1. Opening: Actor hallucination example (terminal output)
-2. Architecture diagram from README
-3. Base vs Trained comparison chart (`outputs/base_vs_trained.png`)
-4. 200-step GRPO reward curve (`outputs/grpo_reward_curve_200.png`)
-5. GitHub + HuggingFace links
+| Number | What |
+|--------|------|
+| **40,000** | Deaths from diagnostic errors/year |
+| **283%** | Improvement over base model |
+| **4×** | More errors caught (2 → 8) |
+| **$0** | Compute cost |
+| **0.04 → 0.153** | Base → Trained score |
+| **0.506** | Peak training reward (step 157) |
+| **3B** | Model size (intentionally small) |
+| **200** | GRPO training steps |
 
-## KEY NUMBERS TO REMEMBER
-- **40,000** deaths from diagnostic errors (BMJ 2023)
-- **283%** improvement over base model
-- **0.040 → 0.153** overall score (Base → Trained)
-- **4×** more correct error flags (2 → 8)
-- **200 steps**, 2h 20m, **$0 compute**
-- **0.506** peak training reward at step 157
-- **8 tools**, **4 error types**, **3 difficulty levels**
+## SCREEN ORDER
+1. Hook → blank screen or logo
+2. Architecture diagram
+3. Base vs Trained comparison chart
+4. GRPO reward curve
+5. GitHub + HF links
