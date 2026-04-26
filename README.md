@@ -1,3 +1,25 @@
+---
+title: "SynthAudit.Env"
+emoji: 🩺
+colorFrom: indigo
+colorTo: emerald
+sdk: docker
+app_port: 8000
+pinned: true
+license: apache-2.0
+short_description: "Multi-Agent Clinical AI Oversight via GRPO Reinforcement Learning"
+tags:
+  - openenv
+  - grpo
+  - clinical-trial
+  - reinforcement-learning
+  - multi-agent
+  - tool-calling
+  - pytorch
+  - medical-ai
+  - ai-safety
+---
+
 # 🩺 SynthAudit.Env
 
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)

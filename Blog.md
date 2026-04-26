@@ -1,3 +1,22 @@
+---
+title: "Who Audits the AI? Building an Adversarial Oversight Agent for Clinical Trials"
+emoji: 🩺
+colorFrom: indigo
+colorTo: emerald
+tags:
+  - openenv
+  - grpo
+  - clinical-trial
+  - reinforcement-learning
+  - multi-agent
+  - tool-calling
+  - pytorch
+  - medical-ai
+  - ai-safety
+pinned: true
+license: apache-2.0
+---
+
 # Who Audits the AI? Building an Adversarial Oversight Agent for Clinical Trials
 
 **TL;DR**: Medical AI hallucinates fake protocol amendments, cites fabricated studies, and confidently clears patients who should never have been treated. We built SynthAudit.Env — a multi-agent environment where one AI generates these deceptive medical errors and another AI learns to catch them through reinforcement learning. 200 steps of GRPO training produced a 283% improvement in error detection, with the agent learning full ReAct reasoning chains from scratch.
