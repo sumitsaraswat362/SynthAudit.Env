@@ -16,7 +16,7 @@
 
 ## The Problem: AI Misdiagnosis Kills
 
-**40,000+ patients** die annually from diagnostic errors in clinical settings [(BMJ 2023)](https://www.bmj.com/content/382/bmj-2022-070491). As healthcare systems deploy AI for clinical trial management — screening eligibility, scheduling treatment, detecting bias — a critical question emerges:
+**40,000+ patients** die annually from diagnostic errors in clinical settings [(Johns Hopkins, BMJ 2016)](https://www.hopkinsmedicine.org/news/media/releases/study_suggests_medical_errors_now_third_leading_cause_of_death_in_the_us). As healthcare systems deploy AI for clinical trial management — screening eligibility, scheduling treatment, detecting bias — a critical question emerges:
 
 > *Who audits the AI?*
 

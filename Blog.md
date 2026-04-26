@@ -16,7 +16,7 @@ Except **Section 4.2.1(b) doesn't exist**. The AI hallucinated it. And the patie
 
 This isn't hypothetical. Hallucinated citations, anchoring on irrelevant features, confidently wrong reasoning — these are documented failure modes in frontier language models applied to clinical contexts. And the consequences aren't benchmark points. They're human lives.
 
-**40,000 patients die from diagnostic errors every year** ([BMJ, 2023](https://www.bmj.com/content/382/bmj-2022-070491)). As we hand more clinical decisions to AI, that number gets harder to defend.
+**40,000 patients die from diagnostic errors every year** ([Johns Hopkins, BMJ 2016](https://www.hopkinsmedicine.org/news/media/releases/study_suggests_medical_errors_now_third_leading_cause_of_death_in_the_us)). As we hand more clinical decisions to AI, that number gets harder to defend.
 
 So I built something to fight it.
 

@@ -412,7 +412,7 @@ The **actual trained model's results** (real LLM inference) are in the ⚔️ Ba
             with gr.Tab("📋 About"):
                 gr.Markdown("""
 ### The Problem
-**40,000+ patients** die annually from diagnostic errors [(BMJ 2023)](https://www.bmj.com/content/382/bmj-2022-070491).
+**40,000+ patients** die annually from diagnostic errors [(Johns Hopkins, BMJ 2016)](https://www.hopkinsmedicine.org/news/media/releases/study_suggests_medical_errors_now_third_leading_cause_of_death_in_the_us).
 As AI deploys in clinical trials: **Who audits the AI?**
 
 ### Our Solution
