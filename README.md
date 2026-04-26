@@ -37,47 +37,47 @@ Manual oversight doesn't scale. We need **AI that watches AI**.
 ╔══════════════════════════════════════════════════════════════╗
 ║                  SynthAudit.Env (OpenEnv)                    ║
 ║                                                              ║
-║   ┌────────────────┐         ┌──────────────────────────┐   ║
-║   │  ACTOR AGENT   │────────▷│   CLINICAL WORLD STATE   │   ║
-║   │  (Frozen LLM)  │         │ • 40-80 patient EHRs     │   ║
-║   │                │         │ • Protocol-specific rules│   ║
-║   │  Generates     │         │ • Injected adversarial   │   ║
-║   │  proposals     │         │   errors (4 types)       │   ║
-║   │  with subtle   │         │ • Bias signals           │   ║
-║   │  reasoning     │         │ • Fake citations         │   ║
-║   │  flaws         │         └──────────────────────────┘   ║
+║   ┌────────────────┐         ┌──────────────────────────┐    ║
+║   │  ACTOR AGENT   │────────▷│   CLINICAL WORLD STATE   │    ║
+║   │  (Frozen LLM)  │         │ • 40-80 patient EHRs     │    ║
+║   │                │         │ • Protocol-specific rules│    ║
+║   │  Generates     │         │ • Injected adversarial   │    ║
+║   │  proposals     │         │   errors (4 types)       │    ║
+║   │  with subtle   │         │ • Bias signals           │    ║
+║   │  reasoning     │         │ • Fake citations         │    ║
+║   │  flaws         │         └──────────────────────────┘    ║
 ║   └────────────────┘                    │                    ║
 ║          │ Proposals                    │ Observations       ║
 ║          ▼                              ▼                    ║
 ║   ┌──────────────────────────────────────────────────────┐   ║
-║   │          OVERSIGHT AGENT (Being Trained)              │   ║
-║   │                                                       │   ║
-║   │  8 Tools:                                             │   ║
-║   │  ├─ review_proposal      See Actor reasoning          │   ║
-║   │  ├─ investigate_patient  Raw EHR data                 │   ║
-║   │  ├─ request_shap         Feature attribution          │   ║
-║   │  ├─ cohort_analysis      Statistical bias detection   │   ║
-║   │  ├─ temporal_audit       Timeline consistency         │   ║
-║   │  ├─ flag_error           Flag with Theory-of-Mind     │   ║
-║   │  ├─ approve              Approve correct proposals    │   ║
-║   │  └─ submit_audit_report  End episode                  │   ║
+║   │          OVERSIGHT AGENT (Being Trained)             │   ║
+║   │                                                      │   ║
+║   │  8 Tools:                                            │   ║
+║   │  ├─ review_proposal      See Actor reasoning         │   ║
+║   │  ├─ investigate_patient  Raw EHR data                │   ║
+║   │  ├─ request_shap         Feature attribution         │   ║
+║   │  ├─ cohort_analysis      Statistical bias detection  │   ║
+║   │  ├─ temporal_audit       Timeline consistency        │   ║
+║   │  ├─ flag_error           Flag with Theory-of-Mind    │   ║
+║   │  ├─ approve              Approve correct proposals   │   ║
+║   │  └─ submit_audit_report  End episode                 │   ║
 ║   └──────────────────────────────────────────────────────┘   ║
 ║                                                              ║
 ║   ┌──────────────────────────────────────────────────────┐   ║
-║   │              DENSE SHAPED REWARD MODEL                │   ║
-║   │  F-β score (β=1.5): recall > precision                │   ║
+║   │              DENSE SHAPED REWARD MODEL               │   ║
+║   │  F-β score (β=1.5): recall > precision               │   ║
 ║   │  +0.30 correct flag | +0.12 relevant SHAP            │   ║
-║   │  +0.10 temporal audit (error patient)                 │   ║
-║   │  +0.05 Theory-of-Mind bonus (explain WHY)             │   ║
-║   │  -0.25 false positive | -0.003/step cost              │   ║
-║   │  Trajectory bonus for efficient, systematic auditing  │   ║
+║   │  +0.10 temporal audit (error patient)                │   ║
+║   │  +0.05 Theory-of-Mind bonus (explain WHY)            │   ║
+║   │  -0.25 false positive | -0.003/step cost             │   ║
+║   │  Trajectory bonus for efficient, systematic auditing │   ║
 ║   └──────────────────────────────────────────────────────┘   ║
 ║                                                              ║
 ║   ┌──────────────────────────────────────────────────────┐   ║
-║   │              ADAPTIVE CURRICULUM                      │   ║
-║   │  Performance > 0.7 → difficulty auto-escalates        │   ║
-║   │  Error types rotate to prevent pattern memorization   │   ║
-║   │  Seed variation creates unique scenarios each episode │   ║
+║   │              ADAPTIVE CURRICULUM                     │   ║
+║   │  Performance > 0.7 → difficulty auto-escalates       │   ║
+║   │  Error types rotate to prevent pattern memorization  │   ║
+║   │  Seed variation creates unique scenarios each episode│   ║
 ║   └──────────────────────────────────────────────────────┘   ║
 ╚══════════════════════════════════════════════════════════════╝
 ```
@@ -244,17 +244,6 @@ SynthAudit.Env/
     ├── train_grpo.py               # TRL GRPOTrainer (env_factory)
     └── train_colab.py              # Unsloth 4-bit LoRA (Colab)
 ```
-
----
-
-## Why This Wins
-
-| Criteria (Weight) | Our Approach |
-|---|---|
-| **Innovation (40%)** | Multi-agent oversight + 8 tools + Theory-of-Mind + adaptive curriculum + SHAP explainability + statistical bias analysis. No other entry combines these. |
-| **Storytelling (30%)** | Life-or-death stakes. Real medical AI failure modes. "Who audits the AI?" |
-| **Reward Curves (20%)** | Dense shaped rewards ensure visible improvement across 200 GRPO steps. +283% over base model from $0 compute. F-β (β=1.5) prioritizes recall because missing errors kills patients. |
-| **Pipeline (10%)** | Native TRL GRPOTrainer, Qwen2.5-3B via Unsloth, Colab-ready, reproducible. |
 
 ---
 
