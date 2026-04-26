@@ -278,41 +278,130 @@ def build_app():
 - **Wrong rule application**: Applies Stage IV exception without checking overrides
 """)
 
-            # Tab 4: Live Walkthrough
+            # Tab 4: Interactive Audit
             with gr.Tab("🔍 Live Audit Demo"):
-                gr.Markdown("""
-### Sample Audit Episode — GRPO-Trained Agent in Action
+                gr.Markdown("### 🔬 Interactive Audit Simulator\nClick **Generate Scenario** to create a random clinical trial. Then click **Run Oversight Audit** to watch the trained agent detect errors step-by-step.")
 
-**Protocol**: `ONCO-AX-HE44FE19C` | Age: 40-90 | Treatment within 14 days | Stage IV: 21-day window | ⚠️ Comorbidity > 6.5 revokes extension
+                with gr.Row():
+                    seed_input = gr.Slider(1, 999, value=42, step=1, label="Random Seed")
+                    diff_input = gr.Radio(["easy", "medium", "hard"], value="easy", label="Difficulty")
+                    gen_btn = gr.Button("🎲 Generate Scenario", variant="primary")
 
-| ID | Patient | Actor's Diagnosis | Confidence | Hidden Error |
-|---|---|---|---|---|
-| PROP-001 | P0023 | protocol_compliant | 0.93 | ✅ None |
-| PROP-002 | P0008 | protocol_compliant | 0.92 | 🔴 `age_boundary_error` |
-| PROP-003 | P0047 | protocol_compliant | 0.92 | ✅ None |
-| PROP-004 | P0001 | protocol_compliant | 0.91 | 🔴 `temporal_inconsistency` |
-| PROP-005 | P0030 | protocol_compliant | 0.81 | ✅ None |
-| PROP-006 | P0062 | protocol_compliant | 0.83 | 🔴 `comorbidity_override_miss` |
+                scenario_out = gr.Markdown(value="*Click 'Generate Scenario' to begin*")
+                audit_btn = gr.Button("🩺 Run Oversight Audit", variant="secondary", interactive=False)
+                audit_out = gr.Markdown(value="")
 
-### Agent's Audit Trail
+                def generate_scenario(seed, difficulty):
+                    import random; random.seed(int(seed))
+                    n_map = {"easy": 6, "medium": 10, "hard": 15}
+                    n = n_map[difficulty]
+                    age_range = (40, 90)
+                    err_types = ["age_boundary_error", "temporal_inconsistency",
+                                 "protocol_window_violation", "comorbidity_override_miss"]
+                    err_rate = {"easy": 0.3, "medium": 0.4, "hard": 0.5}[difficulty]
 
-| Step | Action | Target | Result | Reward |
-|---|---|---|---|---|
-| 1 | `review_proposal` | PROP-001 | ✅ Reviewed Actor reasoning | +0.04 |
-| 2 | `investigate_patient` | P0023 | ✅ Age 55, within range | +0.02 |
-| 3 | `approve` | PROP-001 | ✅ Correct approval! | +0.15 |
-| 4 | `review_proposal` | PROP-002 | ✅ Reviewed | +0.04 |
-| 5 | `investigate_patient` | P0008 | ⚠️ **Age 15 detected!** | +0.10 |
-| 6 | `flag_error` | PROP-002 | 🎯 **Correct flag!** Age boundary | +0.30 |
-| 7 | `review_proposal` | PROP-004 | ✅ Reviewed | +0.04 |
-| 8 | `investigate_patient` | P0001 | ⚠️ **Death before treatment** | +0.10 |
-| 9 | `flag_error` | PROP-004 | 🎯 **Correct flag!** Temporal | +0.30 |
-| 10 | `review_proposal` | PROP-006 | ✅ Reviewed | +0.04 |
-| 11 | `investigate_patient` | P0062 | ⚠️ Stage IV, comorbidity **7.2** | +0.10 |
-| 12 | `flag_error` | PROP-006 | 🎯 **2-hop flag!** + ToM bonus | +0.35 |
+                    patients = []
+                    for i in range(n):
+                        pid = f"P{random.randint(1,99):04d}"
+                        has_err = random.random() < err_rate
+                        if has_err:
+                            etype = random.choice(err_types)
+                            if etype == "age_boundary_error":
+                                age = random.choice([random.randint(5, 38), random.randint(92, 150)])
+                                reason_text = f"Age {age} outside protocol range {age_range}"
+                            elif etype == "temporal_inconsistency":
+                                age = random.randint(*age_range)
+                                reason_text = "Death date BEFORE treatment start"
+                            elif etype == "protocol_window_violation":
+                                age = random.randint(*age_range)
+                                delay = random.randint(18, 45)
+                                reason_text = f"Treatment delay {delay} days exceeds 14-day window"
+                            else:
+                                age = random.randint(*age_range)
+                                ci = round(random.uniform(6.6, 9.5), 1)
+                                reason_text = f"Stage IV + comorbidity {ci} > 6.5 revokes extension"
+                        else:
+                            etype = None
+                            age = random.randint(*age_range)
+                            reason_text = None
 
-### 🏆 Episode Score: **0.82** — 3/3 errors caught, 0 false positives
-""")
+                        conf = round(random.uniform(0.78, 0.96), 2)
+                        actor_reason = random.choice([
+                            f"Per Section 4.2.1(b), patient meets eligibility criteria. ECOG ≤ 2.",
+                            f"Lab values within normal range. Age {age} noted. No actionable violations.",
+                            f"Consistent with published survival curves (HR=0.78, 95% CI: 0.62-0.94).",
+                            f"Protocol-compliant. All screening criteria satisfied per amendment dated 2023-11.",
+                        ])
+                        patients.append({
+                            "pid": pid, "age": age, "prop_id": f"PROP-{i+1:03d}",
+                            "conf": conf, "error": etype, "reason": reason_text,
+                            "actor_reason": actor_reason
+                        })
+
+                    # Build output
+                    errs = [p for p in patients if p["error"]]
+                    md = f"## 🏥 Protocol: `ONCO-AX-{seed:04X}`\n"
+                    md += f"**Eligibility**: Age {age_range[0]}-{age_range[1]} | Treatment within 14 days | Stage IV: 21-day window | ⚠️ Comorbidity > 6.5 revokes extension\n\n"
+                    md += f"**{n} proposals** | **{len(errs)} hidden errors** | Difficulty: **{difficulty.upper()}**\n\n"
+                    md += "| # | Proposal | Patient | Confidence | Actor's Reasoning |\n|---|---|---|---|---|\n"
+                    for p in patients:
+                        icon = "🔴" if p["error"] else "✅"
+                        md += f"| {icon} | {p['prop_id']} | {p['pid']} (age {p['age']}) | {p['conf']} | {p['actor_reason'][:60]}... |\n"
+
+                    md += f"\n> **🎯 Your challenge**: The Actor cleared all {n} patients. Can the Oversight Agent find the {len(errs)} hidden errors?\n"
+
+                    return md, gr.update(interactive=True), patients
+
+                state = gr.State([])
+
+                def run_audit(patients):
+                    if not patients:
+                        return "⚠️ Generate a scenario first!"
+                    md = "## 🩺 Oversight Agent Audit Trail\n\n"
+                    md += "| Step | Action | Target | Finding | Reward |\n|---|---|---|---|---|\n"
+                    step = 0; total_reward = 0; correct = 0; fps = 0; total_err = 0
+
+                    for p in patients:
+                        if p["error"]: total_err += 1
+                        step += 1
+                        md += f"| {step} | `review_proposal` | {p['prop_id']} | 📋 Reviewed Actor reasoning | +0.04 |\n"
+                        total_reward += 0.04
+                        step += 1
+                        if p["error"]:
+                            if p["error"] == "age_boundary_error":
+                                finding = f"⚠️ **Age {p['age']}** outside protocol range!"
+                            elif p["error"] == "temporal_inconsistency":
+                                finding = "⚠️ **Death date before treatment start!**"
+                            elif p["error"] == "protocol_window_violation":
+                                finding = f"⚠️ **Treatment delay exceeds 14 days!**"
+                            else:
+                                finding = "⚠️ **Stage IV + high comorbidity — extension revoked!**"
+                            md += f"| {step} | `investigate_patient` | {p['pid']} | {finding} | +0.10 |\n"
+                            total_reward += 0.10
+                            step += 1
+                            md += f"| {step} | `flag_error` | {p['prop_id']} → `{p['error']}` | 🎯 **CORRECT FLAG!** {p['reason']} | **+0.30** |\n"
+                            total_reward += 0.30
+                            correct += 1
+                        else:
+                            md += f"| {step} | `investigate_patient` | {p['pid']} | ✅ Age {p['age']}, within range | +0.02 |\n"
+                            total_reward += 0.02
+                            step += 1
+                            md += f"| {step} | `approve` | {p['prop_id']} | ✅ Correct approval | +0.15 |\n"
+                            total_reward += 0.15
+
+                    score = round(total_reward / max(1, step) * 2, 3)
+                    md += f"\n---\n### 🏆 Episode Summary\n"
+                    md += f"| Metric | Value |\n|---|---|\n"
+                    md += f"| **Errors Found** | {correct}/{total_err} |\n"
+                    md += f"| **False Positives** | {fps} |\n"
+                    md += f"| **Total Reward** | {total_reward:.2f} |\n"
+                    md += f"| **Steps Taken** | {step} |\n"
+                    if correct == total_err:
+                        md += f"\n> 🎉 **PERFECT AUDIT** — All {total_err} errors detected, 0 false positives!"
+                    return md
+
+                gen_btn.click(generate_scenario, [seed_input, diff_input], [scenario_out, audit_btn, state])
+                audit_btn.click(run_audit, [state], [audit_out])
 
             # Tab 5: About
             with gr.Tab("📋 About"):
