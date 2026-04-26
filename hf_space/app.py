@@ -70,7 +70,7 @@ def make_reward_plot():
 
     ax.set_xlabel('Training Step', color='#8b949e', fontsize=11)
     ax.set_ylabel('Mean Reward', color='#8b949e', fontsize=11)
-    ax.set_title('GRPO 200-Step Reward Curve — Qwen2.5-3B-Instruct | 4-bit LoRA | Tesla T4 | $0 Compute',
+    ax.set_title('GRPO 200-Step Reward Curve — Qwen2.5-3B-Instruct | 4-bit QLoRA | Tesla T4',
                  color='#f0f6fc', fontsize=12, fontweight='bold', pad=10)
     ax.legend(fontsize=9, facecolor='#161b22', edgecolor='#30363d', labelcolor='#c9d1d9')
     ax.set_xlim(0.5, 200.5)
@@ -153,7 +153,7 @@ def build_app():
             <h1>🩺 SynthAudit.Env</h1>
             <p>Multi-Agent Clinical AI Oversight — 200-Step GRPO Reinforcement Learning</p>
             <p style="margin-top: 8px; color: #58a6ff !important; font-size: 0.95em;">
-                AI that watches AI • $0 compute • 283% improvement over baseline
+                AI that watches AI • Colab T4 GPU • 283% improvement over baseline
             </p>
             <p style="margin-top: 14px;">
                 <a href="https://github.com/sumitsaraswat362/SynthAudit.Env" target="_blank" style="color: #58a6ff; text-decoration: none; margin: 0 10px;">📦 GitHub</a> |
@@ -167,7 +167,7 @@ def build_app():
             gr.HTML('<div class="stat-card"><h3>+283%</h3><p>Improvement Over Base</p></div>')
             gr.HTML('<div class="stat-card"><h3>0.506</h3><p>Peak GRPO Reward</p></div>')
             gr.HTML('<div class="stat-card"><h3>200</h3><p>Training Steps</p></div>')
-            gr.HTML('<div class="stat-card"><h3>$0</h3><p>Compute Cost</p></div>')
+            gr.HTML('<div class="stat-card"><h3>8</h3><p>Oversight Tools</p></div>')
             gr.HTML('<div class="stat-card"><h3>4×</h3><p>More Errors Caught</p></div>')
 
         with gr.Tabs():
@@ -185,7 +185,7 @@ def build_app():
 | **Quantization** | 4-bit QLoRA (Unsloth) | | **Algorithm** | GRPO (TRL) |
 | **GPU** | Tesla T4 (free Colab) | | **Training Time** | 2h 20m |
 | **Steps** | 200 | | **Peak Reward** | **0.506** (Step 157) |
-| **Compute Cost** | **$0** | | **Final Reward** | 0.346 |
+| **Hardware** | **Free Colab T4** | | **Final Reward** | 0.346 |
 
 ### What The Model Learned (Zero Supervised Data)
 
@@ -422,7 +422,7 @@ An **Oversight Agent** trained with GRPO learns to catch errors from an **Actor 
 ### Key Results
 - **283% improvement** over untrained baseline
 - **4× more clinical errors** correctly detected
-- **$0 compute cost** — trained on free Google Colab T4
+- **Free Colab T4** — trained in 2h 20m on 15.6 GB VRAM
 - **200 GRPO steps** in 2 hours 20 minutes
 
 ### Links

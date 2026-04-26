@@ -27,7 +27,6 @@ tags:
 [![GRPO Training](https://img.shields.io/badge/RL-GRPO%20200%20Steps-orange.svg)](#grpo-reinforcement-learning-results)
 [![HF Model](https://img.shields.io/badge/🤗-Trained%20Adapter-yellow.svg)](https://huggingface.co/Timusgeorge/SynthAudit-Qwen2.5-3B-GRPO)
 [![Improvement](https://img.shields.io/badge/Improvement-+283%25-brightgreen.svg)](#evaluation-results)
-[![Compute](https://img.shields.io/badge/Compute%20Cost-$0-success.svg)](#grpo-reinforcement-learning-results)
 
 ### Multi-Agent Clinical AI Oversight Environment
 
