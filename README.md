@@ -119,6 +119,75 @@ The oversight agent doesn't just detect errors — it must explain **why the Act
 
 ---
 
+## Environment Deep Dive
+
+### The 8-Tool Investigation System
+
+Each tool mirrors a real clinical audit workflow and returns structured data requiring interpretation:
+
+| Tool | Action | Returns |
+|------|--------|---------|
+| `review_proposal` | Read Actor's reasoning | Diagnosis, confidence, citations, justification |
+| `investigate_patient` | Pull raw EHR record | Age, stage, comorbidity index, dates |
+| `request_shap` | Feature attribution | SHAP values showing decision drivers |
+| `cohort_analysis` | Statistical group analysis | Bias detection across demographics |
+| `temporal_audit` | Timeline consistency check | Date validity verification |
+| `flag_error` | Flag with Theory-of-Mind reason | Requires explaining WHY Actor was wrong |
+| `approve` | Confirm correct proposal | Marks as verified |
+| `submit_audit_report` | End episode | Scored for comprehensiveness |
+
+Most hackathon environments have 2-3 actions. We have **8**, each returning rich data that requires clinical interpretation.
+
+### The 4 Adversarial Error Layers
+
+| Layer | Error Type | Reasoning Required | Difficulty |
+|-------|-----------|-------------------|------------|
+| 1 | **Age Boundary** | Compare age vs protocol range (Actor buries it in irrelevant features) | ★☆☆ |
+| 2 | **Temporal Inconsistency** | Death date before treatment date — pull raw EHR and verify | ★★☆ |
+| 3 | **Protocol Window Violation** | Treatment delay exceeds allowed window, Stage IV gets extensions | ★★☆ |
+| 4 | **2-Hop Comorbidity Override** | Stage IV extension exists (Hop 1) BUT revoked if comorbidity > 6.5 (Hop 2) | ★★★ |
+
+Layer 4 is where frontier LLMs fail. The Actor applies Hop 1 correctly but ignores Hop 2 — the reasoning is partially correct, making it much harder to detect than outright fabrication.
+
+### Dense Shaped Reward Model
+
+| Action | Reward | Rationale |
+|--------|--------|-----------|
+| Correct error flag | **+0.30** | Primary objective |
+| Correct approval | +0.15 | Don't flag indiscriminately |
+| SHAP on error patient's key feature | +0.12 | Evidence-based investigation |
+| Temporal audit on error patient | +0.10 | Systematic timeline checking |
+| Theory-of-Mind bonus | +0.05 | Explained WHY Actor was wrong |
+| Report quality bonus | +0.08–0.10 | Comprehensive summary |
+| False positive | **-0.25** | Penalize sloppy flagging |
+| Duplicate action | -0.04 | Anti-reward-hacking |
+| Per-step cost | -0.003 | Efficiency pressure |
+
+F-β scoring with **β=1.5** — in clinical settings, missing a real error is worse than raising a false alarm.
+
+### Procedural Generation & Adaptive Curriculum
+
+- **40-80 patients** per episode with realistic EHR data (age distributions, staging, comorbidity)
+- **Seed-based reproducibility** — same seed → same episode. Judges can verify results exactly
+- **Adaptive difficulty** — if agent scores > 0.7, difficulty auto-escalates
+- **Error rotation** — prevents pattern memorization across episodes
+- **Three tiers**: Easy (4-6 proposals, age errors only) → Medium (6-9, mixed) → Hard (8-17, all 4 types)
+
+### OpenEnv Compliance
+
+```
+$ openenv validate .
+[OK] : Ready for multi-mode deployment ✅
+```
+
+- Gym-style API: `reset()`, `step()`, `state()`
+- FastAPI server with 64 concurrent sessions
+- Pydantic-typed actions, observations, state
+- `uv.lock` for reproducible dependencies
+- Docker deployment ready
+
+---
+
 ## Evaluation Results
 
 ### Post-Training Evaluation (5 seeds × 3 difficulties)
