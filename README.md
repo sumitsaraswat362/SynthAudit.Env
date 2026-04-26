@@ -36,6 +36,17 @@ tags:
 
 ---
 
+### 🏆 Important Links (Start Here)
+
+* **📖 Full Blog Writeup**: [Who Audits the AI? — SynthAudit.Env Blog](https://huggingface.co/spaces/Timusgeorge/SynthAudit-Env/blob/main/Blog.md)
+* **🔬 Playable Environment (HF Space)**: [Timusgeorge/SynthAudit-Env](https://huggingface.co/spaces/Timusgeorge/SynthAudit-Env)
+* **🧠 Trained Model Weights (LoRA Adapter)**: [Timusgeorge/SynthAudit-Qwen2.5-3B-GRPO](https://huggingface.co/Timusgeorge/SynthAudit-Qwen2.5-3B-GRPO)
+* **📊 Reproducible Training Script (Colab-ready)**: [`training/train_grpo.py`](training/train_grpo.py) | [`training/train_200.py`](training/train_200.py)
+* **📈 Training Evidence**: [200-step reward curve](outputs/grpo_reward_curve_200.png) | [Base vs Trained comparison](outputs/base_vs_trained.png) | [Training dashboard](outputs/training_dashboard.png)
+* **📋 Raw Training Data**: [`training_log_200.json`](outputs/training_log_200.json) | [`post_training_eval.json`](outputs/post_training_eval.json)
+
+---
+
 ## The Problem: AI Misdiagnosis Kills
 
 **40,000+ patients** die annually from diagnostic errors in clinical settings [(Johns Hopkins, BMJ 2016)](https://www.hopkinsmedicine.org/news/media/releases/study_suggests_medical_errors_now_third_leading_cause_of_death_in_the_us). As healthcare systems deploy AI for clinical trial management — screening eligibility, scheduling treatment, detecting bias — a critical question emerges:
