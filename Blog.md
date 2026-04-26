@@ -221,6 +221,30 @@ The environment is the contribution. The model is proof it works. Scaling is one
 
 ---
 
+### Training Dashboard (4-Panel View)
+
+![Training Dashboard](https://github.com/sumitsaraswat362/SynthAudit.Env/raw/main/outputs/training_dashboard.png)
+
+---
+
+## Why This Approach Is Different
+
+There's growing work on AI safety in healthcare. Here's where SynthAudit.Env fits:
+
+| Approach | What It Does | What It Misses |
+|----------|-------------|----------------|
+| **MedQA / USMLE benchmarks** | Tests medical knowledge | No adversarial reasoning, no multi-agent dynamics |
+| **Red-teaming (manual)** | Humans find model failures | Doesn't scale, can't train an oversight agent |
+| **Constitutional AI** | Self-critique via rules | No investigation tools, no raw data verification |
+| **NurseSim-RL** (HF blog) | RL for clinical triage | Single-agent, no adversarial Actor |
+| **SynthAudit.Env (ours)** | Multi-agent oversight with adversarial error injection, 8 investigation tools, Theory-of-Mind scoring, dense shaped rewards | — |
+
+The key difference: we don't test whether a model *knows* medicine. We test whether a model can *catch another model* when it's confidently wrong. That's a fundamentally different capability — one that becomes critical as AI systems are deployed in clinical pipelines where the cost of undetected errors is measured in human lives.
+
+No existing benchmark combines adversarial multi-agent dynamics, tool-augmented investigation, and RL-trainable oversight in a clinical domain.
+
+---
+
 ## Try It
 
 Everything is open-source. Clone, install, run:
@@ -235,6 +259,10 @@ python inference.py --mode heuristic  # No GPU needed
 - 📦 [GitHub](https://github.com/sumitsaraswat362/SynthAudit.Env)
 - 🤗 [Trained Model](https://huggingface.co/Timusgeorge/SynthAudit-Qwen2.5-3B-GRPO)
 - 🔬 [Interactive Dashboard](https://huggingface.co/spaces/Timusgeorge/SynthAudit-Env)
+
+**Raw Data** (verify every claim):
+- [`training_log_200.json`](https://huggingface.co/spaces/Timusgeorge/SynthAudit-Env/blob/main/outputs/training_log_200.json) — all 200 reward values
+- [`post_training_eval.json`](https://huggingface.co/spaces/Timusgeorge/SynthAudit-Env/blob/main/outputs/post_training_eval.json) — base vs trained evaluation
 
 ```bibtex
 @misc{saraswat2026synthaudit,
