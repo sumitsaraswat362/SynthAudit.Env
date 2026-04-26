@@ -258,7 +258,9 @@ The key difference: we don't test whether a model *knows* medicine. We test whet
 
 ## Training Validation: Proof the Environment Works
 
-The environment is the contribution. Training is the proof it works. We validated with GRPO on a free Colab T4 — Qwen2.5-3B-Instruct, 4-bit QLoRA, 200 steps, zero cost.
+The environment is the contribution. Training is the proof it works. We validated with GRPO on a free Colab T4 — Qwen2.5-3B-Instruct, 4-bit QLoRA, 200 steps.
+
+**🚀 [Open the Training Notebook in Colab](https://colab.research.google.com/drive/13H5L6bjg-wYvDFkXamO7_hms5MN8E8s3?usp=share_link)** — judges can re-run the full training pipeline.
 
 ### The Reward Curve
 
@@ -327,6 +329,7 @@ python inference.py --mode heuristic  # No GPU needed
 - 📦 [GitHub](https://github.com/sumitsaraswat362/SynthAudit.Env)
 - 🤗 [Trained Model](https://huggingface.co/Timusgeorge/SynthAudit-Qwen2.5-3B-GRPO)
 - 🔬 [Interactive Dashboard](https://huggingface.co/spaces/Timusgeorge/SynthAudit-Env)
+- 🚀 [Colab Training Notebook](https://colab.research.google.com/drive/13H5L6bjg-wYvDFkXamO7_hms5MN8E8s3?usp=share_link)
 
 **Raw Data** (verify every claim):
 - [`training_log_200.json`](https://huggingface.co/spaces/Timusgeorge/SynthAudit-Env/blob/main/outputs/training_log_200.json) — all 200 reward values

@@ -40,7 +40,8 @@ tags:
 * **📖 Full Blog Writeup**: [Who Audits the AI? — SynthAudit.Env Blog](https://huggingface.co/spaces/Timusgeorge/SynthAudit-Env/blob/main/Blog.md)
 * **🔬 Playable Environment (HF Space)**: [Timusgeorge/SynthAudit-Env](https://huggingface.co/spaces/Timusgeorge/SynthAudit-Env)
 * **🧠 Trained Model Weights (LoRA Adapter)**: [Timusgeorge/SynthAudit-Qwen2.5-3B-GRPO](https://huggingface.co/Timusgeorge/SynthAudit-Qwen2.5-3B-GRPO)
-* **📊 Reproducible Training Script (Colab-ready)**: [`training/train_grpo.py`](training/train_grpo.py) | [`training/train_200.py`](training/train_200.py)
+* **🚀 Colab Training Notebook**: [Open in Colab](https://colab.research.google.com/drive/13H5L6bjg-wYvDFkXamO7_hms5MN8E8s3?usp=share_link)
+* **📊 Reproducible Training Script**: [`training/train_grpo.py`](training/train_grpo.py) | [`training/train_200.py`](training/train_200.py)
 * **📈 Training Evidence**: [200-step reward curve](outputs/grpo_reward_curve_200.png) | [Base vs Trained comparison](outputs/base_vs_trained.png) | [Training dashboard](outputs/training_dashboard.png)
 * **📋 Raw Training Data**: [`training_log_200.json`](outputs/training_log_200.json) | [`post_training_eval.json`](outputs/post_training_eval.json)
 
