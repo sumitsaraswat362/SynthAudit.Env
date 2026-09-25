@@ -28,6 +28,15 @@ tags:
 [![HF Model](https://img.shields.io/badge/🤗-Trained%20Adapter-yellow.svg)](https://huggingface.co/Timusgeorge/SynthAudit-Qwen2.5-3B-GRPO)
 [![Improvement](https://img.shields.io/badge/Improvement-+283%25-brightgreen.svg)](#evaluation-results)
 
+<div align="center">
+  <br/>
+  <h2>🏆 Meta PyTorch OpenEnv Hackathon 2026 — Top 100 Winner</h2>
+  <img src="assets/meta_top100_certificate.jpg" alt="Meta OpenEnv Top 100 Certificate" width="80%" style="border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.15);" />
+  <br/>
+  <p><b>Officially selected in the Top 100 teams globally for outstanding technical excellence in the Meta PyTorch OpenEnv Hackathon.</b></p>
+  <br/>
+</div>
+
 ### Multi-Agent Clinical AI Oversight Environment
 
 > **Theme**: #1 Multi-Agent Interactions — **Fleet AI: Scalable Oversight**
